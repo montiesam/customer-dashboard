@@ -1,66 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Customer CRM Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link href="https://api.mapbox.com/mapbox-gl-js/v3.0.1/mapbox-gl.css" rel="stylesheet">
+    <script src="https://api.mapbox.com/mapbox-gl-js/v3.0.1/mapbox-gl.js"></script>
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        #map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+        }
+
+        .legend {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+            z-index: 1;
+            font-size: 14px;
+            max-height: 90vh;
+            overflow: auto;
+        }
+
+        .legend div {
+            margin-bottom: 6px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="legend">
+    <div><span style="color:#6FBF73;">●</span> Halter Customer</div>
+    <div><span style="color:#E9B59A;">●</span> Closed Lost</div>
+    <div><span style="color:#B30000;">●</span> Do not contact - poor sentiment</div>
+    <div><span style="color:#66A9E8;">●</span> To Prospect</div>
+    <div><span style="color:#E8C96B;">●</span> No immediate action - in negotiation</div>
+    <div><span style="color:#A9C9D6;">●</span> To re-engage</div>
+    <div><span style="color:#C00000;">●</span> No Longer A Farm</div>
+    <div><span style="color:#5C4423;">●</span> Corporate Farm</div>
+    <div><span style="color:#444444;">●</span> Not in my Halter area</div>
+    <div><span style="color:#CCCCCC;">●</span> Competitor Collar</div>
+</div>
+
+<div id="map"></div>
+
 <script>
+    const MAPBOX_TOKEN = 'pk.eyJ1Ijoic2FtbW9udGllIiwiYSI6ImNtbnF5YTg1aTBkNTUycG9jemUwbG4yeDkifQ.7amxg2xA46W7Gt-_yXm57g';
 
-const MAPBOX_TOKEN = 'YOUR_PUBLIC_PK_TOKEN';
+    mapboxgl.accessToken = MAPBOX_TOKEN;
 
-mapboxgl.accessToken = MAPBOX_TOKEN;
+    const map = new mapboxgl.Map({
+        container: 'map',
+        style: 'mapbox://styles/mapbox/light-v11',
+        center: [175, -37],
+        zoom: 6
+    });
 
-const map = new mapboxgl.Map({
-container: 'map',
-style: 'mapbox://styles/mapbox/light-v11',
-center: [175,-37],
-zoom: 6
-});
+    map.on('load', () => {
 
-map.on('load', () => {
+        map.addSource('customers', {
+            type: 'geojson',
+            data: `https://api.mapbox.com/datasets/v1/sammontie/cmnqy347565zm1mlk0enj2iwi/features?access_token=$pk.eyJ1Ijoic2FtbW9udGllIiwiYSI6ImNtbnF5YTg1aTBkNTUycG9jemUwbG4yeDkifQ.7amxg2xA46W7Gt-_yXm57g`
+        });
 
-map.addSource('customers', {
-type: 'geojson',
-data: `https://api.mapbox.com/datasets/v1/sammontie/cmnqy347565zm1mlk0enj2iwi/features?access_token=${MAPBOX_TOKEN}`
-});
+        map.addLayer({
+            id: 'customer-points',
+            type: 'circle',
+            source: 'customers',
 
-map.addLayer({
-id: 'customer-points',
-type: 'circle',
-source: 'customers',
+            paint: {
+                'circle-radius': 8,
+                'circle-stroke-width': 1.5,
+                'circle-stroke-color': '#ffffff',
 
-paint: {
-'circle-radius': 8,
-'circle-stroke-width': 1.5,
-'circle-stroke-color': '#ffffff',
+                'circle-color': [
+                    'match',
+                    ['get', 'status'],
 
-'circle-color': [
-'match',
-['get', 'status'],
+                    'Halter Customer', '#6FBF73',
+                    'Closed Lost', '#E9B59A',
+                    'Do not contact - poor sentiment', '#B30000',
+                    'To Prospect', '#66A9E8',
+                    'No immediate action - in negotiation', '#E8C96B',
+                    'To re-engage', '#A9C9D6',
+                    'No Longer A Farm', '#C00000',
+                    'Corporate Farm', '#5C4423',
+                    'Not in my Halter area', '#444444',
+                    'Competitor Collar', '#CCCCCC',
 
-'Halter Customer', '#6FBF73',
-'Closed Lost', '#E9B59A',
-'Do not contact - poor sentiment', '#B30000',
-'To Prospect', '#66A9E8',
-'No immediate action - in negotiation', '#E8C96B',
-'To re-engage', '#A9C9D6',
-'No Longer A Farm', '#C00000',
-'Corporate Farm', '#5C4423',
-'Not in my Halter area', '#444444',
-'Competitor Collar', '#CCCCCC',
+                    '#999999'
+                ]
+            }
+        });
 
-'#999999'
-]
-}
-});
+        map.on('click', 'customer-points', (e) => {
 
-map.on('click', 'customer-points', (e) => {
+            const props = e.features[0].properties;
 
-const props = e.features[0].properties;
+            new mapboxgl.Popup()
+                .setLngLat(e.lngLat)
+                .setHTML(
+                    `<strong>${props.customer_name}</strong><br>Status: ${props.status}`
+                )
+                .addTo(map);
 
-new mapboxgl.Popup()
-.setLngLat(e.lngLat)
-.setHTML(
-'<strong>' + props.customer_name + '</strong><br>Status: ' + props.status
-)
-.addTo(map);
+        });
 
-});
-
-});
-
+    });
 </script>
+
+</body>
+</html>
