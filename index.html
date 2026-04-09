@@ -63,7 +63,7 @@ const map = new mapboxgl.Map({
 map.on('load', async function () {
 
     const response = await fetch(
-        `https://api.mapbox.com/datasets/v1/sammontie/cmnqy347565zm1mlk0enj2iwi/features?access_token=${pk.eyJ1Ijoic2FtbW9udGllIiwiYSI6ImNtbnF5YTg1aTBkNTUycG9jemUwbG4yeDkifQ.7amxg2xA46W7Gt-_yXm57g}`
+        `https://api.mapbox.com/datasets/v1/sammontie/cmnqy347565zm1mlk0enj2iwi/features?access_token=$pk.eyJ1Ijoic2FtbW9udGllIiwiYSI6ImNtbnF5YTg1aTBkNTUycG9jemUwbG4yeDkifQ.7amxg2xA46W7Gt-_yXm57g`
     );
 
     const geojson = await response.json();
