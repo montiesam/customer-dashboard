@@ -24,34 +24,15 @@ map.on('load', async () => {
     });
 
     map.addLayer({
-        id: 'customer-points',
-        type: 'circle',
-        source: 'customers',
+    id: 'customer-points',
+    type: 'circle',
+    source: 'customers',
 
-        paint: {
-            'circle-radius': 8,
-            'circle-stroke-width': 1.5,
-            'circle-stroke-color': '#ffffff',
-
-            'circle-color': [
-                'match',
-                ['get', 'status'],
-
-                'Halter Customer', '#6FBF73',
-                'Closed Lost', '#E9B59A',
-                'Do not contact - poor sentiment', '#B30000',
-                'To Prospect', '#66A9E8',
-                'No immediate action - in negotiation', '#E8C96B',
-                'To re-engage', '#A9C9D6',
-                'No Longer A Farm', '#C00000',
-                'Corporate Farm', '#5C4423',
-                'Not in my Halter area', '#444444',
-                'Competitor Collar', '#CCCCCC',
-
-                '#999999'
-            ]
-        }
-    });
+    paint: {
+        'circle-radius': 20,
+        'circle-color': '#FF0000'
+    }
+});
 
     map.on('click', 'customer-points', (e) => {
 
