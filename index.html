@@ -103,6 +103,18 @@ map.on('load', async function () {
             '#999999'
         ]
     }
+     map.on('click', 'customer-points', (e) => {
+
+    const props = e.features[0].properties;
+
+    new mapboxgl.Popup()
+        .setLngLat(e.lngLat)
+        .setHTML(
+            `<strong>${props.customer_name}</strong><br>Status: ${props.status}`
+        )
+        .addTo(map);
+
+});
 });
 
 });
