@@ -114,16 +114,33 @@ map.on('load', async function () {
         }
     });
 
-    map.on('click', 'customer-points', function (e) {
+    let popup;
+
+    map.on('mouseenter', 'customer-points', function (e) {
+
+        map.getCanvas().style.cursor = 'pointer';
 
         const props = e.features[0].properties;
 
-        new mapboxgl.Popup()
+        popup = new mapboxgl.Popup({
+            closeButton: false,
+            closeOnClick: false
+        })
             .setLngLat(e.lngLat)
             .setHTML(
                 `<strong>${props.customer_name}</strong><br>Status: ${props.status}`
             )
             .addTo(map);
+
+    });
+
+    map.on('mouseleave', 'customer-points', function () {
+
+        map.getCanvas().style.cursor = '';
+
+        if (popup) {
+            popup.remove();
+        }
 
     });
 
